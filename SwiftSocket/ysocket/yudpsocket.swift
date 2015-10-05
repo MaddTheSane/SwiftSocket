@@ -30,8 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import Foundation
 
-@asmname("yudpsocket_server") func c_yudpsocket_server(host:UnsafePointer<Int8>,port:in_port_t) -> Int32
-@asmname("yudpsocket_recive") func c_yudpsocket_recive(fd:Int32, buff:UnsafeMutablePointer<UInt8>, len:Int, ip:UnsafeMutablePointer<CChar>, port:UnsafeMutablePointer<in_port_t>) -> Int
+@asmname("yudpsocket_server") func c_yudpsocket_server(host: UnsafePointer<Int8>, port: in_port_t) -> Int32
+@asmname("yudpsocket_recive") func c_yudpsocket_recive(fd:Int32, buffer:UnsafeMutablePointer<UInt8>, length: Int, ip:UnsafeMutablePointer<CChar>, port:UnsafeMutablePointer<in_port_t>) -> Int
 @asmname("yudpsocket_close") func c_yudpsocket_close(fd:Int32) -> Int32
 @asmname("yudpsocket_client") func c_yudpsocket_client() -> Int32
 @asmname("yudpsocket_get_server_ip") func c_yudpsocket_get_server_ip(host: UnsafePointer<Int8>, ip: UnsafeMutablePointer<Int8>) -> Int32
@@ -58,7 +58,7 @@ public class UDPClient: YSocket {
     ///return success or fail with message
     public func send(data d:[UInt8])->(Bool,String){
         if let fd:Int32=self.fd{
-            let sendsize=c_yudpsocket_sentto(fd, buff: d, len: d.count, ip: self.addr,port: self.port)
+            let sendsize=c_yudpsocket_sentto(fd, buff: d, len: d.count, ip: self.addr, port: self.port)
             if Int(sendsize)==d.count{
                 return (true,"send success")
             }else{
@@ -130,7 +130,7 @@ public class UDPServer:YSocket{
             var buff:[UInt8] = [UInt8](count:expectlen,repeatedValue:0x0)
             var remoteipbuff:[Int8] = [Int8](count:16,repeatedValue:0x0)
             var remoteport:in_port_t=0
-            let readLen=c_yudpsocket_recive(fd, buff: &buff, len: expectlen, ip: &remoteipbuff, port: &remoteport)
+            let readLen=c_yudpsocket_recive(fd, buffer: &buff, length: expectlen, ip: &remoteipbuff, port: &remoteport)
             let port:in_port_t=in_port_t(remoteport)
             var addr:String=""
             if let ip=String(CString: remoteipbuff, encoding: NSUTF8StringEncoding){

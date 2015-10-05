@@ -44,7 +44,7 @@
 #include <sys/select.h>
 #include <stdbool.h>
 
-#pragma GCC visibility push(hidden)
+#include "ysocket.h"
 
 static void ytcpsocket_set_block(int socket,bool on) {
     int flags;
@@ -166,4 +166,3 @@ int ytcpsocket_accept(int onsocketfd,char *remoteip,in_port_t* remoteport){
     }
 }
 
-#pragma GCC visibility pop

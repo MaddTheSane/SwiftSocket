@@ -42,6 +42,7 @@
 /* Begin PBXFileReference section */
 		5518C82F19A329100049DC22 /* SwiftSocket */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftSocket; sourceTree = BUILT_PRODUCTS_DIR; };
 		55A676E019A5FFCF00663380 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = main.swift; path = SwiftSocket/main.swift; sourceTree = SOURCE_ROOT; };
+		55C796821BC339380044D0C2 /* ysocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ysocket.h; sourceTree = "<group>"; };
 		D43083781A565EBF004DE4D4 /* ysocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ysocket.swift; sourceTree = "<group>"; };
 		D43083791A565EBF004DE4D4 /* ytcpsocket.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ytcpsocket.c; sourceTree = "<group>"; };
 		D430837A1A565EBF004DE4D4 /* ytcpsocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ytcpsocket.swift; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		D43083771A565EBF004DE4D4 /* ysocket */ = {
 			isa = PBXGroup;
 			children = (
+				55C796821BC339380044D0C2 /* ysocket.h */,
 				D43083781A565EBF004DE4D4 /* ysocket.swift */,
 				D43083791A565EBF004DE4D4 /* ytcpsocket.c */,
 				D430837A1A565EBF004DE4D4 /* ytcpsocket.swift */,

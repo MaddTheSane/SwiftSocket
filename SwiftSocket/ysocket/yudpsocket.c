@@ -36,9 +36,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <netdb.h>
-#define yudpsocket_buff_len 8192
 
-#pragma GCC visibility push(hidden)
+#include "ysocket.h"
+
+#define yudpsocket_buff_len 8192
 
 //return socket fd
 int yudpsocket_server(const char *addr,in_port_t port){
@@ -93,7 +94,7 @@ int yudpsocket_get_server_ip(const char *host,char *ip){
     return 0;
 }
 //send message to addr and port
-long yudpsocket_sentto(int socket_fd,const char *msg,long len, char *toaddr, in_port_t topotr){
+long yudpsocket_sentto(int socket_fd,const char *msg,long len, const char *toaddr, in_port_t topotr){
     struct sockaddr_in addr;
     socklen_t addrlen=sizeof(addr);
     memset(&addr, 0x0, sizeof(struct sockaddr_in));
@@ -103,5 +104,3 @@ long yudpsocket_sentto(int socket_fd,const char *msg,long len, char *toaddr, in_
     ssize_t sendlen=sendto(socket_fd, msg, len, 0, (struct sockaddr *)&addr, addrlen);
     return sendlen;
 }
-
-#pragma GCC visibility pop
