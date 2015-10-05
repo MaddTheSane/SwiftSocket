@@ -42,6 +42,9 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/select.h>
+
+#pragma GCC visibility push(hidden)
+
 void ytcpsocket_set_block(int socket,int on) {
     int flags;
     flags = fcntl(socket,F_GETFL,0);
@@ -161,3 +164,5 @@ int ytcpsocket_accept(int onsocketfd,char *remoteip,int* remoteport){
         return -1;
     }
 }
+
+#pragma GCC visibility pop

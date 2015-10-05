@@ -38,6 +38,8 @@
 #include <netdb.h>
 #define yudpsocket_buff_len 8192
 
+#pragma GCC visibility push(hidden)
+
 //return socket fd
 int yudpsocket_server(const char *addr,int port){
     //create socket
@@ -102,4 +104,4 @@ int yudpsocket_sentto(int socket_fd,char *msg,int len, char *toaddr, int topotr)
     return sendlen;
 }
 
-
+#pragma GCC visibility pop
