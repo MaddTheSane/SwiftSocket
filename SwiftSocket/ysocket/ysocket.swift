@@ -30,6 +30,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import Foundation
 public class YSocket{
+    public enum Errors: ErrorType {
+        case UnknownError(code: Int32)
+        
+        case ConnectionClosed
+        case ConnectionTimeOut
+        case QueryServerFailed
+        
+        case SocketNotOpen
+        
+        case SendFailure
+        case ReadFailure
+        case ListenFailure
+        
+        case NoIP
+    }
+    
     public internal(set) var addr:String
     public internal(set) var port:in_port_t
     var fd:Int32?

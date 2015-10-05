@@ -56,61 +56,59 @@ public class UDPClient: YSocket {
 	
     ///send data
     ///return success or fail with message
-    public func send(data d:[UInt8])->(Bool,String){
+    public func send(data d:[UInt8]) throws {
         if let fd:Int32=self.fd{
             let sendsize=c_yudpsocket_sentto(fd, buff: d, len: d.count, ip: self.addr, port: self.port)
             if Int(sendsize)==d.count{
-                return (true,"send success")
+                return //(true,"send success")
             }else{
-                return (false,"send error")
+                throw Errors.SendFailure
             }
         }else{
-            return (false,"socket not open")
+            throw Errors.SocketNotOpen
         }
     }
 	
     ///send string
     ///return success or fail with message
-    public func send(string s:String)->(Bool,String){
+    public func send(string s:String) throws {
         if let fd:Int32=self.fd{
             if let cStr = s.cStringUsingEncoding(NSUTF8StringEncoding) {
                 let cStrSize = cStr.count - 1 //Remove the trailing null
                 let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(cStr), len: cStrSize, ip: self.addr, port: self.port)
                 if sendsize==cStrSize{
-                    return (true,"send success")
+                    return //(true,"send success")
                 }else{
-                    return (false,"send error")
+                    throw Errors.SendFailure
                 }
             } else {
-                return (false,"send error")
+                throw Errors.SendFailure
             }
         }else{
-            return (false,"socket not open")
+            throw Errors.SocketNotOpen
         }
     }
 	
     /// send nsdata
-    public func send(data d:NSData)->(Bool,String){
+    public func send(data d:NSData)throws {
         if let fd:Int32=self.fd{
-            var buff:[UInt8] = [UInt8](count:d.length,repeatedValue:0x0)
-            d.getBytes(&buff, length: d.length)
             let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(d.bytes), len: d.length, ip: self.addr,port: self.port)
             if sendsize==d.length{
-                return (true,"send success")
+                return //(true,"send success")
             }else{
-                return (false,"send error")
+                throw Errors.SendFailure
             }
         }else{
-            return (false,"socket not open")
+            throw Errors.SocketNotOpen
         }
     }
-    public func close()->(Bool,String){
+    public func close() throws {
         if let fd:Int32=self.fd{
             c_yudpsocket_close(fd)
             self.fd=nil
-            return (true,"close success")
+            return //(true,"close success")
         }else{
-            return (false,"socket not open")
+            throw Errors.SocketNotOpen
         }
     }
     //TODO: add multycast and boardcast
@@ -125,7 +123,7 @@ public class UDPServer:YSocket{
         }
     }
     //TODO: add multycast and boardcast
-    public func recv(expectlen:Int)->([UInt8]?,String,in_port_t){
+    public func recv(expectlen:Int) throws -> ([UInt8]?,String,in_port_t) {
         if let fd:Int32 = self.fd{
             var buff:[UInt8] = [UInt8](count:expectlen,repeatedValue:0x0)
             var remoteipbuff:[Int8] = [Int8](count:16,repeatedValue:0x0)
@@ -143,15 +141,15 @@ public class UDPServer:YSocket{
             let data:[UInt8] = Array(rs)
             return (data,addr,port)
         }
-        return (nil,"no ip",0)
+        throw Errors.NoIP
     }
-    public func close()->(Bool,String){
+    public func close() throws {
         if let fd:Int32=self.fd{
             c_yudpsocket_close(fd)
             self.fd=nil
-            return (true,"close success")
+            return //(true,"close success")
         }else{
-            return (false,"socket not open")
+            throw Errors.SocketNotOpen
         }
     }
 }
