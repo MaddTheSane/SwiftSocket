@@ -50,7 +50,7 @@
 		D43083871A565F7F004DE4D4 /* ysocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ysocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D430838A1A565F7F004DE4D4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D430838B1A565F7F004DE4D4 /* ysocket-ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ysocket-ios.h"; sourceTree = "<group>"; };
-		D4F0E4051A5661260085C247 /* ysocketOSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ysocketOSX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4F0E4051A5661260085C247 /* ysocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ysocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4F0E4081A5661260085C247 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4F0E4091A5661260085C247 /* ysocketOSX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ysocketOSX.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -95,7 +95,7 @@
 			children = (
 				5518C82F19A329100049DC22 /* SwiftSocket */,
 				D43083871A565F7F004DE4D4 /* ysocket.framework */,
-				D4F0E4051A5661260085C247 /* ysocketOSX.framework */,
+				D4F0E4051A5661260085C247 /* ysocket.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -229,7 +229,7 @@
 			);
 			name = ysocketOSX;
 			productName = ysocketOSX;
-			productReference = D4F0E4051A5661260085C247 /* ysocketOSX.framework */;
+			productReference = D4F0E4051A5661260085C247 /* ysocket.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -497,7 +497,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "ixy.io.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = ysocket;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -519,7 +519,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "ixy.io.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = ysocket;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
