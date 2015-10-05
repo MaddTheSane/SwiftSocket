@@ -42,18 +42,18 @@ func testtcpclient(){
             var data=client.read(1024*10)
             if let d=data{
                 if let str=String(bytes: d, encoding: NSUTF8StringEncoding){
-                    println(str)
+                    print(str)
                 }
             }
         }else{
-            println(errmsg)
+            print(errmsg)
         }
     }else{
-        println(errmsg)
+        print(errmsg)
     }
 }
 func echoService(client c:TCPClient){
-    println("newclient from:\(c.addr)[\(c.port)]")
+    print("newclient from:\(c.addr)[\(c.port)]")
     var d=c.read(1024*10)
     c.send(data: d!)
     c.close()
@@ -66,11 +66,11 @@ func testtcpserver(){
             if var client=server.accept(){
                 echoService(client: client)
             }else{
-                println("accept error")
+                print("accept error")
             }
         }
     }else{
-        println(msg)
+        print(msg)
     }
 }
 //testclient()
@@ -80,22 +80,22 @@ func testudpserver(){
         var run:Bool=true
         while run{
             var (data,remoteip,remoteport)=server.recv(1024)
-            println("recive")
+            print("recive")
             if let d=data{
                 if let str=String(bytes: d, encoding: NSUTF8StringEncoding){
-                    println(str)
+                    print(str)
                 }
             }
-            println(remoteip)
+            print(remoteip)
             server.close()
             break
         }
     })
 }
 func testudpclient(){
-    var client:UDPClient=UDPClient(addr: "localhost", port: 8080)
-    println("send hello world")
-    client.send(str: "hello world")
+    let client:UDPClient=UDPClient(addr: "localhost", port: 8080)
+    print("send hello world")
+    client.send(string: "hello world")
     client.close()
 }
 testudpserver()

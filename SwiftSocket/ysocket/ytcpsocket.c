@@ -42,20 +42,21 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <stdbool.h>
 
 #pragma GCC visibility push(hidden)
 
-void ytcpsocket_set_block(int socket,int on) {
+static void ytcpsocket_set_block(int socket,bool on) {
     int flags;
     flags = fcntl(socket,F_GETFL,0);
-    if (on==0) {
+    if (on==false) {
         fcntl(socket, F_SETFL, flags | O_NONBLOCK);
     }else{
         flags &= ~ O_NONBLOCK;
         fcntl(socket, F_SETFL, flags);
     }
 }
-int ytcpsocket_connect(const char *host,int port,int timeout){
+int ytcpsocket_connect(const char *host,in_port_t port,int timeout){
     struct sockaddr_in sa;
     struct hostent *hp;
     int sockfd = -1;
@@ -67,7 +68,7 @@ int ytcpsocket_connect(const char *host,int port,int timeout){
     sa.sin_family = hp->h_addrtype;
     sa.sin_port = htons(port);
     sockfd = socket(hp->h_addrtype, SOCK_STREAM, 0);
-    ytcpsocket_set_block(sockfd,0);
+    ytcpsocket_set_block(sockfd,false);
     connect(sockfd, (struct sockaddr *)&sa, sizeof(sa));
     fd_set          fdwrite;
     struct timeval  tvSelect;
@@ -90,7 +91,7 @@ int ytcpsocket_connect(const char *host,int port,int timeout){
             close(sockfd);
             return -4;//connect fail
         }
-        ytcpsocket_set_block(sockfd, 1);
+        ytcpsocket_set_block(sockfd, true);
         int set = 1;
         setsockopt(sockfd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
         return sockfd;
@@ -99,7 +100,7 @@ int ytcpsocket_connect(const char *host,int port,int timeout){
 int ytcpsocket_close(int socketfd){
     return close(socketfd);
 }
-int ytcpsocket_pull(int socketfd,char *data,int len,int timeout_sec){
+long ytcpsocket_pull(int socketfd,char *data,long len,int timeout_sec){
     if (timeout_sec>0) {
         fd_set fdset;
         struct timeval timeout;
@@ -112,13 +113,13 @@ int ytcpsocket_pull(int socketfd,char *data,int len,int timeout_sec){
             return ret; // select-call failed or timeout occurred (before anything was sent)
         }
     }
-    int readlen=(int)read(socketfd,data,len);
+    long readlen=read(socketfd,data,len);
     return readlen;
 }
-int ytcpsocket_send(int socketfd,const char *data,int len){
-    int byteswrite=0;
+long ytcpsocket_send(int socketfd,const char *data,long len){
+    long byteswrite=0;
     while (len-byteswrite>0) {
-        int writelen=(int)write(socketfd, data+byteswrite, len-byteswrite);
+        ssize_t writelen=write(socketfd, data+byteswrite, len-byteswrite);
         if (writelen<0) {
             return -1;
         }
@@ -127,7 +128,7 @@ int ytcpsocket_send(int socketfd,const char *data,int len){
     return byteswrite;
 }
 //return socket fd
-int ytcpsocket_listen(const char *addr,int port){
+int ytcpsocket_listen(const char *addr,in_port_t port){
     //create socket
     int socketfd=socket(AF_INET, SOCK_STREAM, 0);
     int reuseon   = 1;
@@ -150,7 +151,7 @@ int ytcpsocket_listen(const char *addr,int port){
     }
 }
 //return client socket fd
-int ytcpsocket_accept(int onsocketfd,char *remoteip,int* remoteport){
+int ytcpsocket_accept(int onsocketfd,char *remoteip,in_port_t* remoteport){
     socklen_t clilen;
     struct sockaddr_in  cli_addr;
     clilen = sizeof(cli_addr);

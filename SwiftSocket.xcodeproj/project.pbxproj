@@ -89,6 +89,7 @@
 				5518C83019A329100049DC22 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		5518C83019A329100049DC22 /* Products */ = {
 			isa = PBXGroup;
@@ -240,7 +241,7 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastUpgradeCheck = 0700;
-				ORGANIZATIONNAME = swift;
+				ORGANIZATIONNAME = skysent;
 				TargetAttributes = {
 					5518C82E19A329100049DC22 = {
 						CreatedOnToolsVersion = 6.0;

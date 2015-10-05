@@ -41,7 +41,7 @@
 #pragma GCC visibility push(hidden)
 
 //return socket fd
-int yudpsocket_server(const char *addr,int port){
+int yudpsocket_server(const char *addr,in_port_t port){
     //create socket
     int socketfd=socket(AF_INET, SOCK_DGRAM, 0);
     int reuseon   = 1;
@@ -59,11 +59,11 @@ int yudpsocket_server(const char *addr,int port){
         return -1;
     }
 }
-int yudpsocket_recive(int socket_fd,char *outdata,int expted_len,char *remoteip,int* remoteport){
+long yudpsocket_recive(int socket_fd,char *outdata,long expted_len,char *remoteip,in_port_t* remoteport){
     struct sockaddr_in  cli_addr;
     socklen_t clilen=sizeof(cli_addr);
     memset(&cli_addr, 0x0, sizeof(struct sockaddr_in));
-    int len=(int)recvfrom(socket_fd, outdata, expted_len, 0, (struct sockaddr *)&cli_addr, &clilen);
+    ssize_t len=recvfrom(socket_fd, outdata, expted_len, 0, (struct sockaddr *)&cli_addr, &clilen);
     char *clientip=inet_ntoa(cli_addr.sin_addr);
     memcpy(remoteip, clientip, strlen(clientip));
     *remoteport=cli_addr.sin_port;
@@ -80,7 +80,7 @@ int yudpsocket_client(){
     setsockopt( socketfd, SOL_SOCKET, SO_REUSEADDR, &reuseon, sizeof(reuseon) );
     return socketfd;
 }
-int yudpsocket_get_server_ip(char *host,char *ip){
+int yudpsocket_get_server_ip(const char *host,char *ip){
     struct hostent *hp;
     struct sockaddr_in addr;
     hp = gethostbyname(host);
@@ -93,14 +93,14 @@ int yudpsocket_get_server_ip(char *host,char *ip){
     return 0;
 }
 //send message to addr and port
-int yudpsocket_sentto(int socket_fd,char *msg,int len, char *toaddr, int topotr){
+long yudpsocket_sentto(int socket_fd,const char *msg,long len, char *toaddr, in_port_t topotr){
     struct sockaddr_in addr;
     socklen_t addrlen=sizeof(addr);
     memset(&addr, 0x0, sizeof(struct sockaddr_in));
     addr.sin_family=AF_INET;
     addr.sin_port=htons(topotr);
     addr.sin_addr.s_addr=inet_addr(toaddr);
-    int sendlen=(int)sendto(socket_fd, msg, len, 0, (struct sockaddr *)&addr, addrlen);
+    ssize_t sendlen=sendto(socket_fd, msg, len, 0, (struct sockaddr *)&addr, addrlen);
     return sendlen;
 }
 
