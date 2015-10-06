@@ -46,15 +46,19 @@ public class YSocket{
         case NoIP
     }
     
-    public internal(set) var addr:String
+    public internal(set) var address:String
     public internal(set) var port:in_port_t
     var fd:Int32?
     init(){
-        self.addr=""
+        self.address=""
         self.port=0
     }
-    public init(addr a:String,port p:in_port_t){
-        self.addr=a
+    public init(address a:String,port p:in_port_t){
+        self.address=a
         self.port=p
+    }
+    
+    public var opened: Bool {
+        return fd != nil
     }
 }

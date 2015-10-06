@@ -29,75 +29,86 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 import Foundation
 import Darwin.C
+
 func testtcpclient(){
     //创建socket
-    var client:TCPClient = TCPClient(addr: "ixy.io", port: 80)
+    let client:TCPClient = TCPClient(address: "ixy.io", port: 80)
     //连接
-    var (success,errmsg)=client.connect(timeout: 1)
-    if success{
-        //发送数据
-        var (success,errmsg)=client.send(str:"GET / HTTP/1.0\n\n" )
-        if success{
-            //读取数据
-            var data=client.read(1024*10)
-            if let d=data{
-                if let str=String(bytes: d, encoding: NSUTF8StringEncoding){
-                    print(str)
-                }
-            }
-        }else{
-            print(errmsg)
+    do {
+        try client.connect(timeout: 1)
+        try client.send(string:"GET / HTTP/1.0\n\n" )
+        let data = try client.read(1024*10)
+        if let str=String(bytes: data, encoding: NSUTF8StringEncoding){
+            print(str)
         }
-    }else{
-        print(errmsg)
+
+    } catch {
+        print(error)
     }
 }
+
 func echoService(client c:TCPClient){
-    print("newclient from:\(c.addr)[\(c.port)]")
-    var d=c.read(1024*10)
-    c.send(data: d!)
-    c.close()
+    print("newclient from:\(c.address)[\(c.port)]")
+    do {
+        let d = try c.read(1024*10)
+        try c.send(data: d)
+        try c.close()
+    } catch {
+        print(error)
+    }
 }
+
 func testtcpserver(){
-    var server:TCPServer = TCPServer(addr: "127.0.0.1", port: 8080)
-    var (success,msg)=server.listen()
-    if success{
-        while true{
-            if var client=server.accept(){
+    let server:TCPServer = TCPServer(address: "127.0.0.1", port: 8080)
+    do {
+        try server.listen()
+        while true {
+            if let client = try? server.accept() {
                 echoService(client: client)
             }else{
                 print("accept error")
             }
         }
-    }else{
-        print(msg)
+    } catch {
+        print(error)
     }
 }
+
 //testclient()
 func testudpserver(){
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
-        var server:UDPServer=UDPServer(addr:"127.0.0.1",port:8080)
+        let server:UDPServer=UDPServer(address:"127.0.0.1",port:8080)
         var run:Bool=true
         while run{
-            var (data,remoteip,remoteport)=server.recv(1024)
-            print("recive")
-            if let d=data{
-                if let str=String(bytes: d, encoding: NSUTF8StringEncoding){
-                    print(str)
+            do {
+                let (data,remoteip,_) = try server.recv(1024)
+                print("recive")
+                if let d=data{
+                    if let str=String(bytes: d, encoding: NSUTF8StringEncoding){
+                        print(str)
+                    }
                 }
+                print(remoteip)
+                try server.close()
+            } catch {
+                print(error)
             }
-            print(remoteip)
-            server.close()
+            run = false
             break
         }
     })
 }
+
 func testudpclient(){
-    let client:UDPClient=UDPClient(addr: "localhost", port: 8080)
+    let client:UDPClient=UDPClient(address: "localhost", port: 8080)
     print("send hello world")
-    client.send(string: "hello world")
-    client.close()
+    do {
+        try client.send(string: "hello world")
+        try client.close()
+    } catch {}
 }
+
+testtcpclient()
 testudpserver()
 testudpclient()
 

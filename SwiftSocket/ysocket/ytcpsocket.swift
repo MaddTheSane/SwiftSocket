@@ -37,12 +37,10 @@ import Foundation
 @asmname("ytcpsocket_accept") func c_ytcpsocket_accept(onsocketfd: Int32, ip: UnsafeMutablePointer<CChar>, port: UnsafeMutablePointer<in_port_t>) -> Int32
 
 public class TCPClient:YSocket{
-    /*
-     * connect to server
-     * return success or fail with message
-     */
-    public func connect(timeout t:Int) throws {
-        let rs:Int32=c_ytcpsocket_connect(self.addr, port: self.port,timeout: Int32(t))
+    ///connect to server
+    ///throws on failure
+    public func connect(timeout t: Int32) throws {
+        let rs:Int32=c_ytcpsocket_connect(address, port: port, timeout: t)
         if rs>0{
             self.fd=rs
             return //(true,"connect success")
@@ -61,18 +59,19 @@ public class TCPClient:YSocket{
     }
 	
     ///close socket
-    ///return success or fail with message
+    ///throws on failure
     public func close() throws {
-        if let fd=self.fd{
+        if let fd=self.fd {
             c_ytcpsocket_close(fd)
             self.fd=nil
             return //(true,"close success")
-        }else{
+        } else {
             throw Errors.SocketNotOpen
         }
     }
+    
     ///send data
-    ///return success or fail with message
+    ///throws on failure
     public func send(data d:[UInt8]) throws {
         if let fd:Int32=self.fd{
             let sendsize=c_ytcpsocket_send(fd, buffer: d, length: d.count)
@@ -86,15 +85,19 @@ public class TCPClient:YSocket{
         }
     }
 	
-    ///send string as UTF8
-    ///return success or fail with message
-    public func send(str s:String) throws {
+    ///send string as in specified encoding, defaulting to UTF8
+    ///throws on failure
+    public func send(string s:String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         if let fd=self.fd{
-            let utf8Len = s.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
-            let sendsize=c_ytcpsocket_send(fd, buffer: s, length: utf8Len )
-            if sendsize==utf8Len{
-                return //(true,"send success")
-            }else{
+            if let cStr = s.cStringUsingEncoding(encoding) {
+                let cStrSize = cStr.count - 1 //Remove the trailing null
+                let sendsize=c_ytcpsocket_send(fd, buffer: UnsafePointer<UInt8>(cStr), length: cStrSize )
+                if sendsize==cStrSize{
+                    return //(true,"send success")
+                }else{
+                    throw Errors.SendFailure
+                }
+            } else {
                 throw Errors.SendFailure
             }
         }else{
@@ -103,9 +106,9 @@ public class TCPClient:YSocket{
     }
 	
     ///send nsdata
-    public func send(data d:NSData) throws {
-        if let fd=self.fd{
-            let sendsize=c_ytcpsocket_send(fd, buffer: UnsafePointer<UInt8>(d.bytes), length: d.length)
+    public func send(data d: NSData) throws {
+        if let fd = self.fd{
+            let sendsize = c_ytcpsocket_send(fd, buffer: UnsafePointer<UInt8>(d.bytes), length: d.length)
             if sendsize==d.length{
                 return //(true,"send success")
             }else{
@@ -136,8 +139,7 @@ public class TCPClient:YSocket{
 public class TCPServer:YSocket{
 
     public func listen() throws {
-        
-        let fd:Int32=c_ytcpsocket_listen(self.addr, port: self.port)
+        let fd:Int32=c_ytcpsocket_listen(address, port: self.port)
         if fd>0{
             self.fd=fd
             return //(true,"listen success")
@@ -145,7 +147,7 @@ public class TCPServer:YSocket{
             throw Errors.ListenFailure
         }
     }
-    public func accept() throws -> TCPClient{
+    public func accept() throws -> TCPClient {
         if let serferfd=self.fd{
             var buff:[Int8] = [Int8](count:16,repeatedValue:0x0)
             var port:in_port_t=0
@@ -156,8 +158,8 @@ public class TCPServer:YSocket{
             let tcpClient:TCPClient=TCPClient()
             tcpClient.fd=clientfd
             tcpClient.port=port
-            if let addr=String(CString: buff, encoding: NSUTF8StringEncoding){
-               tcpClient.addr=addr
+            if let addr = String(CString: buff, encoding: NSUTF8StringEncoding) {
+               tcpClient.address=addr
             }
             return tcpClient
         }

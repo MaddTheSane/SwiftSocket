@@ -38,13 +38,13 @@ import Foundation
 @asmname("yudpsocket_sentto") func c_yudpsocket_sentto(fd: Int32, buff: UnsafePointer<UInt8>, len: Int, ip: UnsafePointer<CChar>, port: in_port_t) -> Int
 
 public class UDPClient: YSocket {
-    public override init(addr a:String,port p:in_port_t){
+    public override init(address a:String,port p:in_port_t) {
         super.init()
         var remoteipbuff:[Int8] = [Int8](count:16,repeatedValue:0x0)
-        let ret=c_yudpsocket_get_server_ip(a, ip: &remoteipbuff)
-        if ret==0{
-            if let ip=String(CString: remoteipbuff, encoding: NSUTF8StringEncoding){
-                self.addr=ip
+        let ret = c_yudpsocket_get_server_ip(a, ip: &remoteipbuff)
+        if ret == 0 {
+            if let ip=String(CString: remoteipbuff, encoding: NSUTF8StringEncoding) {
+                address=ip
                 self.port=p
                 let fd:Int32=c_yudpsocket_client()
                 if fd>0{
@@ -58,7 +58,7 @@ public class UDPClient: YSocket {
     ///return success or fail with message
     public func send(data d:[UInt8]) throws {
         if let fd:Int32=self.fd{
-            let sendsize=c_yudpsocket_sentto(fd, buff: d, len: d.count, ip: self.addr, port: self.port)
+            let sendsize=c_yudpsocket_sentto(fd, buff: d, len: d.count, ip: address, port: self.port)
             if Int(sendsize)==d.count{
                 return //(true,"send success")
             }else{
@@ -71,11 +71,11 @@ public class UDPClient: YSocket {
 	
     ///send string
     ///return success or fail with message
-    public func send(string s:String) throws {
-        if let fd:Int32=self.fd{
-            if let cStr = s.cStringUsingEncoding(NSUTF8StringEncoding) {
+    public func send(string s:String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+        if let fd = self.fd{
+            if let cStr = s.cStringUsingEncoding(encoding) {
                 let cStrSize = cStr.count - 1 //Remove the trailing null
-                let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(cStr), len: cStrSize, ip: self.addr, port: self.port)
+                let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(cStr), len: cStrSize, ip: address, port: self.port)
                 if sendsize==cStrSize{
                     return //(true,"send success")
                 }else{
@@ -90,9 +90,9 @@ public class UDPClient: YSocket {
     }
 	
     /// send nsdata
-    public func send(data d:NSData)throws {
-        if let fd:Int32=self.fd{
-            let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(d.bytes), len: d.length, ip: self.addr,port: self.port)
+    public func send(data d:NSData) throws {
+        if let fd = self.fd{
+            let sendsize=c_yudpsocket_sentto(fd, buff: UnsafePointer<UInt8>(d.bytes), len: d.length, ip: address, port: port)
             if sendsize==d.length{
                 return //(true,"send success")
             }else{
@@ -115,9 +115,9 @@ public class UDPClient: YSocket {
 }
 
 public class UDPServer:YSocket{
-    public override init(addr a:String,port p:in_port_t){
-        super.init(addr: a, port: p)
-        let fd:Int32 = c_yudpsocket_server(self.addr, port: self.port)
+    public override init(address a:String,port p:in_port_t){
+        super.init(address: a, port: p)
+        let fd:Int32 = c_yudpsocket_server(address, port: self.port)
         if fd>0{
             self.fd=fd
         }
